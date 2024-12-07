@@ -1,3 +1,6 @@
+using Microsoft.EntityFrameworkCore;
+using Trace_Api.Context;
+
 namespace Trace_Api
 {
     public class Program
@@ -13,6 +16,17 @@ namespace Trace_Api
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+
+
+            builder.Services.AddDbContext<TraceContext>(option=> option.UseLazyLoadingProxies().UseSqlServer(builder.Configuration["ConnectionString"]));
+
+
+
+            
+            
+            
+            
+            
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
