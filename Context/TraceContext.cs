@@ -10,10 +10,10 @@ namespace Trace_Api.Context
                 
         }
 
-        public DbSet<Truck> Trucks { get; set; }
-        public DbSet<Trip> Trips { get; set; }
-        public DbSet<Coordinate> Coordinates { get; set; }
-        public DbSet<User> Users { get; set; }
+        public DbSet<Truck>? Trucks { get; set; }
+        public DbSet<Trip>? Trips { get; set; }
+        public DbSet<Coordinate>? Coordinates { get; set; }
+        public DbSet<User>? Users { get; set; }
 
 
     }

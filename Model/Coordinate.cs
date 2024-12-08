@@ -18,7 +18,9 @@ namespace Trace_Api.Model
         
         public DateTime? Timestamp { get; set; }
 
+
+        //导航属性
         [ForeignKey("TripID")]
-        public virtual Trip Trip { get; set; }
+        public virtual Trip? Trip { get; set; }
     }
 }
