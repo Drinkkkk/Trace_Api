@@ -1,33 +1,121 @@
-﻿using Trace_Api.IService;
+﻿using AutoMapper;
+using System;
+using Trace_Api.Dto;
+using Trace_Api.IService;
 using Trace_Api.Model;
+using Trace_Api.UnitOfWork;
 
 namespace Trace_Api.Service
 {
     public class TripService : ITripService
     {
-        public Task<ApiResponse> AddAsync(Trip entity)
+        private readonly IUnitOfWork Work;
+        private readonly IMapper Mapper;
+
+        public TripService(IUnitOfWork unitOfWork,IMapper mapper)
         {
-            throw new NotImplementedException();
+            this.Work = unitOfWork;
+            this.Mapper = mapper;
         }
 
-        public Task<ApiResponse> DeleteAsync(int id)
+        public async Task<ApiResponse> AddAsync(TripDto entity)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var trip = Mapper.Map<Trip>(entity);
+                var repository = Work.GetRepository<Trip>();
+                await repository.InsertAsync(trip);
+                if (await Work.SaveChangesAsync() > 0)
+                    return new ApiResponse(true, entity);
+                else
+                    return new ApiResponse("数据增加失败");
+            }
+            catch (Exception ex)
+            {
+
+                return new ApiResponse(ex.Message);
+            }
+
         }
 
-        public Task<ApiResponse> GetAllAsync()
+        public async Task<ApiResponse> DeleteAsync(int id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var repository = Work.GetRepository<Trip>();
+                var trip = await repository.GetFirstOrDefaultAsync(predicate: x => x.TripID.Equals(id));
+                repository.Delete(trip);
+                if (await Work.SaveChangesAsync() > 0)
+                {
+                    return new ApiResponse(true, "");
+                }
+                else
+                    return new ApiResponse("删除数据失败");
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse(ex.Message);
+            }
         }
 
-        public Task<ApiResponse> GetSingleAsync(int id)
+        public async Task<ApiResponse> GetAllAsync()
         {
-            throw new NotImplementedException();
+            try
+            {
+                var repository = Work.GetRepository<Trip>();
+
+                var triplist = await repository.GetAllAsync();
+                var TripDtoList = Mapper.Map<List<TripDto>>(triplist);
+                return new ApiResponse(true, TripDtoList);
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse(ex.Message);
+            }
         }
 
-        public Task<ApiResponse> UpdateAsync(Trip entity)
+        public async Task<ApiResponse> GetSingleAsync(int id)
         {
-            throw new NotImplementedException();
+
+            try
+            {
+                var repository = Work.GetRepository<Trip>();
+                var trip = await repository.GetFirstOrDefaultAsync(predicate: x => x.TripID.Equals(id));
+                var tripDto = Mapper.Map<TripDto>(trip);
+                return new ApiResponse(true, tripDto);
+
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse(ex.Message);
+            }
+        }
+
+        public async Task<ApiResponse> UpdateAsync(TripDto entity)
+        {
+            try
+            {
+                var totrip = Mapper.Map<Trip>(entity);
+                var repository = Work.GetRepository<Trip>();
+                var trip = await repository.GetFirstOrDefaultAsync(predicate: x => x.TripID.Equals(totrip.TripID));
+               
+              
+                trip.Truck = totrip.Truck;
+                trip.TripStartTime = totrip.TripStartTime;
+                trip.TripEndTime = totrip.TripEndTime;
+                trip.TripStatus = totrip.TripStatus;
+                trip.UpdateDataTime = DateTime.Now;
+
+                repository.Update(trip);
+                if (await Work.SaveChangesAsync() > 0)
+                    return new ApiResponse(true, entity);
+                else
+                    return new ApiResponse("更新数据异常");
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse(ex.Message);
+            }
         }
     }
 }

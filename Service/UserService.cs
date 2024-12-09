@@ -61,8 +61,10 @@ namespace Trace_Api.Service
             try
             {
                 var repository = Work.GetRepository<User>();
+                
                 var userlist = await repository.GetAllAsync();
-                return new ApiResponse(true, userlist);
+                var userDtoList=Mapper.Map<List<UserDto>>(userlist);
+                return new ApiResponse(true, userDtoList);
             }
             catch (Exception ex)
             {
@@ -77,8 +79,8 @@ namespace Trace_Api.Service
             {
                 var repository = Work.GetRepository<User>();
                 var user = await repository.GetFirstOrDefaultAsync(predicate:x=>x.UserID.Equals(id));
-               
-                return new ApiResponse(true, user);
+                var userDto = Mapper.Map<UserDto>(user);
+                return new ApiResponse(true, userDto);
                
             }
             catch (Exception ex)
@@ -91,15 +93,19 @@ namespace Trace_Api.Service
         {
             try
             {
-
+                var touser =Mapper.Map<User>(entity);
                 var repository = Work.GetRepository<User>();
-                var user = await repository.GetFirstOrDefaultAsync(predicate: x => x.UserID.Equals(entity.UserID));
-                user.Username = entity.Username;
-                user.Password = entity.Password;
+                var user = await repository.GetFirstOrDefaultAsync(predicate: x => x.UserID.Equals(touser.UserID));
+                user.Username = touser.Username;
+                user.Password = touser.Password;
+                user.FullName = touser.FullName;
+                user.Phone = touser.Phone;
+                user.Role = touser.Role;
                 user.UpdateDataTime=DateTime.Now;
+
                 repository.Update(user);
                 if (await Work.SaveChangesAsync() > 0)
-                    return new ApiResponse(true, user);
+                    return new ApiResponse(true, entity);
                 else
                     return new ApiResponse("更新数据异常");
             }

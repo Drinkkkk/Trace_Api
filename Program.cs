@@ -30,7 +30,7 @@ namespace Trace_Api
             {
                 //option.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer")
                 var connect= builder.Configuration.GetConnectionString("SqlServer");
-                options.UseSqlServer(connect);
+                options.UseLazyLoadingProxies().UseSqlServer(connect);
             
             }).AddUnitOfWork<TraceContext>()
             .AddCustomRepository<User,UserRepository>()
@@ -40,14 +40,16 @@ namespace Trace_Api
 
           
             builder.Services.AddTransient<IUserService, UserService>();
-
+            builder.Services.AddTransient<ITruckServic,TruckService>();
+            builder.Services.AddTransient<ITripService,TripService>();
+            builder.Services.AddTransient<ICoordinateService, CoordinateService>();
             //Ìí¼ÓAutoMapper
             var config = new MapperConfiguration(cfg =>
             {
                 cfg.AddProfile(new TraceProfile());
             });
-
             builder.Services.AddSingleton(config.CreateMapper());
+
 
             var app = builder.Build();
 
