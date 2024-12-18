@@ -3,7 +3,9 @@ using System;
 using Trace_Api.Dto;
 using Trace_Api.IService;
 using Trace_Api.Model;
+using Trace_Api.Parameter;
 using Trace_Api.UnitOfWork;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Trace_Api.Service
 {
@@ -25,7 +27,7 @@ namespace Trace_Api.Service
                 var repository = Work.GetRepository<Coordinate>();
                 await repository.InsertAsync(coordinate);
                 if (await Work.SaveChangesAsync() > 0)
-                    return new ApiResponse(true, entity);
+                    return new ApiResponse(true, coordinate);
                 return new ApiResponse("增加失败");
             }
             catch (Exception ex )
@@ -60,13 +62,15 @@ namespace Trace_Api.Service
 
         }
 
-        public async Task<ApiResponse> GetAllAsync()
+        public async Task<ApiResponse> GetAllAsync(QueryParameter query)
         {
             try
             {
                 var reposity = Work.GetRepository<Coordinate>();
-                var coorlist = await reposity.GetAllAsync();
-                var coortodo = Mapper.Map<CoordinateDto>(coorlist);
+                var coorlist = await reposity.GetPagedListAsync(predicate: x => string.IsNullOrWhiteSpace(query.Search) ? true : x.CoordinateID.Equals(query.Search),
+                pageIndex: query.PageIndex, pageSize: query.PageSize,
+                    orderBy: source => source.OrderBy(x => x.CoordinateID));
+                var coortodo = Mapper.Map<PagedList<CoordinateDto>>(coorlist);
                 return new ApiResponse(true, coortodo);
             }
             catch (Exception ex)

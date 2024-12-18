@@ -18,11 +18,21 @@ namespace Trace_Api.Model
         public string? Manufacturer { get; set; }
 
         public int? LoadCapacity { get; set; }
+
+        
         [MaxLength(50)]
         public string? Status { get; set; }
 
+        //新增
+        [MaxLength(100)]
+        public string? Title { get; set; }
+
+        // Truck的内容描述
+        [MaxLength(100)]
+        public string? Content { get; set; }
+
         //导航属性
-        public virtual ICollection<Trip>? Trips { get; }
+        public virtual ICollection<Trip>? Trips { get; set; }
 
     }
 }

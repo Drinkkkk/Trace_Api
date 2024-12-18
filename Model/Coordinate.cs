@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace Trace_Api.Model
 {
@@ -12,8 +13,9 @@ namespace Trace_Api.Model
 
         public int? TripID { get; set; }
 
+        [Precision(9, 6)]
         public decimal? Longitude { get; set; }
-
+        [Precision(9, 6)]
         public decimal? Latitude { get; set; }
         
         public DateTime? Timestamp { get; set; }

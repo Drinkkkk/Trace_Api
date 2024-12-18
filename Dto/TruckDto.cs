@@ -58,8 +58,22 @@ namespace Trace_Api.Dto
             set { status = value; OnPropertyChanged(); }
         }
 
-       
 
-    
+        private string? title;
+
+        public string? Title
+        {
+            get { return title; }
+            set { title = value; OnPropertyChanged(); }
+        }
+
+        private string? content;
+
+        public string? Content
+        {
+            get { return content; }
+            set { content = value; OnPropertyChanged(); }
+        }
+
     }
 }

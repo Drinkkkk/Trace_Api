@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Trace_Api.Dto;
 using Trace_Api.IService;
+using Trace_Api.Parameter;
 
 namespace Trace_Api.Controllers
 {
@@ -19,9 +20,9 @@ namespace Trace_Api.Controllers
         public async Task<ApiResponse> Get(int id) => await Service.GetSingleAsync(id);
 
         [HttpPost]
-        public async Task<ApiResponse> GetAll() => await Service.GetAllAsync();
+        public async Task<ApiResponse> GetAll([FromBody] QueryParameter query) => await Service.GetAllAsync(query);
         [HttpPost]
-        public async Task<ApiResponse> Updata([FromBody] CoordinateDto entity) => await Service.UpdateAsync(entity);
+        public async Task<ApiResponse> Update([FromBody] CoordinateDto entity) => await Service.UpdateAsync(entity);
         [HttpPost]
         public async Task<ApiResponse> Add([FromBody] CoordinateDto entity) => await Service.AddAsync(entity);
         [HttpDelete]

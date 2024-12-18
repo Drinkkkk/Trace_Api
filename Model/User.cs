@@ -22,5 +22,11 @@ namespace Trace_Api.Model
         public string? Phone { get; set; }
         [MaxLength(50)]
         public string? Role { get; set; }
+
+        //新增
+        [MaxLength(50)]
+        public string? Message {  get; set; }
+        [MaxLength]
+        public byte[]? AvatarData { get; set; }
     }
 }

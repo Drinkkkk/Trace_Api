@@ -3,6 +3,7 @@ using System;
 using Trace_Api.Dto;
 using Trace_Api.IService;
 using Trace_Api.Model;
+using Trace_Api.Parameter;
 using Trace_Api.UnitOfWork;
 
 namespace Trace_Api.Service
@@ -26,7 +27,7 @@ namespace Trace_Api.Service
                 var repository = Work.GetRepository<Trip>();
                 await repository.InsertAsync(trip);
                 if (await Work.SaveChangesAsync() > 0)
-                    return new ApiResponse(true, entity);
+                    return new ApiResponse(true, trip);
                 else
                     return new ApiResponse("数据增加失败");
             }
@@ -58,14 +59,16 @@ namespace Trace_Api.Service
             }
         }
 
-        public async Task<ApiResponse> GetAllAsync()
+        public async Task<ApiResponse> GetAllAsync(QueryParameter query)
         {
             try
             {
                 var repository = Work.GetRepository<Trip>();
 
-                var triplist = await repository.GetAllAsync();
-                var TripDtoList = Mapper.Map<List<TripDto>>(triplist);
+                var triplist = await repository.GetPagedListAsync(predicate: x => string.IsNullOrWhiteSpace(query.Search) ? true : x.TripID.Equals(query.Search),
+                    pageIndex: query.PageIndex, pageSize: query.PageSize,
+                    orderBy: source => source.OrderBy(x => x.TripStartTime));
+                var TripDtoList = Mapper.Map<PagedList<TripDto>>(triplist);
                 return new ApiResponse(true, TripDtoList);
             }
             catch (Exception ex)

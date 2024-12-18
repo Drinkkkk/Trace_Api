@@ -54,6 +54,13 @@ namespace Trace_Api.Dto
             get { return role; }
             set { role = value; OnPropertyChanged(); }
         }
+        private byte[]? avatardata;
+
+        public byte[]? AvatarData
+        {
+            get { return avatardata; }
+            set { avatardata = value; OnPropertyChanged(); }
+        }
 
     }
 }
