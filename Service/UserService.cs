@@ -68,8 +68,9 @@ namespace Trace_Api.Service
                     predicate: x => string.IsNullOrWhiteSpace(query.Search) ? true : x.Username.Contains(query.Search),
                     pageIndex: query.PageIndex, pageSize: query.PageSize,
                     orderBy: source => source.OrderByDescending(x => x.CreateDataTime)
+                    
                 );
-                var userDtoList = Mapper.Map<List<UserDto>>(userlist);
+                var userDtoList = Mapper.Map<PagedList<UserDto>>(userlist);
                 return new ApiResponse(true, userDtoList);
             }
             catch (Exception ex)

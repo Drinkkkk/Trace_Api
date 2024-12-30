@@ -16,7 +16,7 @@ namespace Trace_Api.Mapper
             CreateMap<PagedList<Truck>, PagedList<TruckDto>>().ReverseMap();
             CreateMap<PagedList<Trip>, PagedList<TripDto>>().ReverseMap();
             CreateMap<PagedList<Coordinate>, PagedList<CoordinateDto>>().ReverseMap();
-         
+            CreateMap<PagedList<User>, PagedList<UserDto>>().ReverseMap();
         }
     }
 }
