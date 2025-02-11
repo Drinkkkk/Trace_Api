@@ -32,9 +32,12 @@ namespace Trace_Api.Controllers
 
 
         [HttpPost]
-        public async Task<ApiResponse> Login(string username,string password) => await Service.LoginAsync(username, password);
+        public async Task<ApiResponse> Login([FromBody] UserDto userDto) => await Service.LoginAsync(userDto);
         [HttpPost]
-        public async Task<ApiResponse> Resgiter([FromBody] UserDto user) => await Service.ResgiterAsync(user);
+        public async Task<ApiResponse> Register([FromBody] UserDto user) => await Service.ResgiterAsync(user);
 
+
+        [HttpPost]
+        public async Task<ApiResponse> GetFilterAsync([FromBody] FilterQuery query) => await Service.GetFilterAllAsync(query);
     }
 }

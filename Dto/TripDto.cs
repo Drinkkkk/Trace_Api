@@ -5,6 +5,8 @@ using System.ComponentModel;
 
 namespace Trace_Api.Dto
 {
+
+    
     public class TripDto:BaseDto
     {
        
@@ -13,6 +15,16 @@ namespace Trace_Api.Dto
         private DateTime? tripStartTime;
         private DateTime? tripEndTime;
         private string? tripStatus;
+
+
+        private List<CoordinateDto>? coordinates;
+
+        public List<CoordinateDto>? Coordinates
+        {
+            get { return coordinates; }
+            set { coordinates = value; OnPropertyChanged(); }
+        }
+
 
         public int TripID
         {

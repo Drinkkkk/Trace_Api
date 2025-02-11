@@ -9,5 +9,6 @@ namespace Trace_Api.IService
     {
         Task<ApiResponse> GetFilterAsync(FilterQuery query);
         Task<ApiResponse> GetSummaryAsync();
+        Task<ApiResponse> GetCarAndCoordinateAsync(FilterQuery query); 
     }
 }

@@ -33,5 +33,9 @@ namespace Trace_Api.Controllers
         //汇总
         [HttpPost]
         public async Task<ApiResponse> Summary() => await Service.GetSummaryAsync();
+
+        [HttpPost]
+        public async Task<ApiResponse> GetCarAndCoor([FromBody] FilterQuery query) => await Service.GetCarAndCoordinateAsync(query);
+
     }
 }

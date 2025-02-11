@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using System.Linq.Expressions;
 using Trace_Api.Dto;
+using Trace_Api.Extensions;
 using Trace_Api.IService;
 using Trace_Api.Model;
 using Trace_Api.Parameter;
@@ -123,12 +124,13 @@ namespace Trace_Api.Service
             }
         }
         #region 登陆注册
-        public async Task<ApiResponse> LoginAsync(string username, string password)
+        public async Task<ApiResponse> LoginAsync(UserDto userDto)
         {
             try
             {
+                userDto.Password = userDto.Password.GetMD5();
                 var repository = Work.GetRepository<User>();
-                var result = await repository.GetFirstOrDefaultAsync(predicate: x => (x.Username.Equals(username)) && (x.Password.Equals(password)));
+                var result = await repository.GetFirstOrDefaultAsync(predicate: x => (x.Username.Equals(userDto.Username)) && (x.Password.Equals(userDto.Password)));
                 if (result != null)
                 {
                     return new ApiResponse(true, result);
@@ -157,6 +159,7 @@ namespace Trace_Api.Service
                     return new ApiResponse("当前账号已存在");
                 }
                 else {
+                    user.Password = user.Password.GetMD5();
                     user.CreateDataTime = DateTime.Now;
                     user.UpdateDataTime = DateTime.Now;
                       await repository.InsertAsync(user);
@@ -173,6 +176,27 @@ namespace Trace_Api.Service
             catch (Exception ex)
             {
 
+                return new ApiResponse(ex.Message);
+            }
+        }
+
+        public async Task<ApiResponse> GetFilterAllAsync(FilterQuery query)
+        {
+            try
+            {
+                var repository = Work.GetRepository<User>();
+
+                var userlist = await repository.GetPagedListAsync(
+                    predicate: x => (string.IsNullOrWhiteSpace(query.Search) ? true : x.Username.Contains(query.Search))&&(query.Filter.Equals("All")?true:x.Role.Contains(query.Filter)),
+                    pageIndex: query.PageIndex, pageSize: query.PageSize,
+                    orderBy: source => source.OrderByDescending(x => x.CreateDataTime)
+
+                );
+                var userDtoList = Mapper.Map<PagedList<UserDto>>(userlist);
+                return new ApiResponse(true, userDtoList);
+            }
+            catch (Exception ex)
+            {
                 return new ApiResponse(ex.Message);
             }
         }

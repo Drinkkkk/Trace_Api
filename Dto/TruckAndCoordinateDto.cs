@@ -1,15 +1,18 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using Trace_Api.Model;
-using System.ComponentModel;
-
-namespace Trace_Api.Dto
+﻿namespace Trace_Api.Dto
 {
-
- 
-    public class TruckDto:BaseDto
+   
+    public class TruckAndCoordinateDto : BaseDto
     {
-        
+        private CoordinateDto? coor;
+
+        public CoordinateDto? LatestCoordinate
+        {
+            get { return coor; }
+            set { coor = value; OnPropertyChanged(); }
+        }
+
+
+
         private int truckid;
 
         public int TruckID
@@ -26,8 +29,8 @@ namespace Trace_Api.Dto
             set { licenseplate = value; OnPropertyChanged(); }
         }
 
-      
-   
+
+
         private string? vehiclemodel;
 
         public string? VehicleModel
@@ -36,7 +39,7 @@ namespace Trace_Api.Dto
             set { vehiclemodel = value; OnPropertyChanged(); }
         }
 
-      
+
 
         private string? manufacturer;
 
@@ -80,4 +83,5 @@ namespace Trace_Api.Dto
         }
 
     }
+
 }

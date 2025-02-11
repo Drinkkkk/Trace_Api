@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
-using System;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using System.Collections.ObjectModel;
 using Trace_Api.Dto;
 using Trace_Api.IService;
@@ -162,6 +163,28 @@ namespace Trace_Api.Service
 
 
                 return new ApiResponse(true, summary);
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse(ex.Message);
+            }
+        }
+
+        public async Task<ApiResponse> GetCarAndCoordinateAsync(FilterQuery query)
+        {
+            try
+            {
+                var repository = Work.GetRepository<Truck>();
+
+                Func<IQueryable<Truck>, IIncludableQueryable<Truck, object>> includeExpression = query =>
+          query.Include(t => t.Trips)
+              .ThenInclude(t => t.Coordinates);
+
+                var trucklist = await repository.GetPagedListAsync(predicate: x => (string.IsNullOrWhiteSpace(query.Search) ? true : x.Title.Contains(query.Search)) && (string.IsNullOrWhiteSpace(query.Filter) ? true : x.Status.Equals(query.Filter)),
+                pageIndex: query.PageIndex, pageSize: query.PageSize,
+                    orderBy: source => source.OrderBy(x => x.TruckID), include: includeExpression);
+                var truckDtoList = Mapper.Map<PagedList<TruckAndCoordinateDto>>(trucklist);
+                return new ApiResponse(true, truckDtoList);
             }
             catch (Exception ex)
             {

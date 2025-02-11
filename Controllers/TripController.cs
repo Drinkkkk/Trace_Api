@@ -27,5 +27,9 @@ namespace Trace_Api.Controllers
         public async Task<ApiResponse> Add([FromBody] TripDto entity) => await Service.AddAsync(entity);
         [HttpDelete]
         public async Task<ApiResponse> Delete(int id) => await Service.DeleteAsync(id);
+
+        [HttpPost]
+        public async Task<ApiResponse> GetFilter([FromBody] FilterQuery query) => await Service.GetFilterAsync(query);
+
     }
 }

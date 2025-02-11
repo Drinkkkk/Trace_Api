@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using System;
 using Trace_Api.Dto;
 using Trace_Api.IService;
@@ -77,13 +79,35 @@ namespace Trace_Api.Service
             }
         }
 
+        public async Task<ApiResponse> GetFilterAsync(FilterQuery query)
+        {
+            try
+            {
+                var repository = Work.GetRepository<Trip>();
+
+                Func<IQueryable<Trip>, IIncludableQueryable<Trip, object>> includeExpression = query =>
+          query.Include(t => t.Coordinates);
+             
+
+                var triplist = await repository.GetPagedListAsync(predicate: x => (string.IsNullOrWhiteSpace(query.Search) ? true : x.Title.Contains(query.Search)) && (string.IsNullOrWhiteSpace(query.Filter) ? true : x.TripStatus.Equals(query.Filter)),
+                pageIndex: query.PageIndex, pageSize: query.PageSize,
+                    orderBy: source => source.OrderBy(x => x.TripID), include: includeExpression);
+                var tirpDtoList = Mapper.Map<PagedList<TripDto>>(triplist);
+                return new ApiResponse(true, tirpDtoList);
+            }
+            catch (Exception ex)
+            {
+                return new ApiResponse(ex.Message);
+            }
+        }
+
         public async Task<ApiResponse> GetSingleAsync(int id)
         {
 
             try
             {
                 var repository = Work.GetRepository<Trip>();
-                var trip = await repository.GetFirstOrDefaultAsync(predicate: x => x.TripID.Equals(id));
+                var trip = await repository.GetFirstOrDefaultAsync(predicate: x => x.TripID.Equals(id), disableTracking: false);
                 var tripDto = Mapper.Map<TripDto>(trip);
                 return new ApiResponse(true, tripDto);
 
@@ -103,12 +127,13 @@ namespace Trace_Api.Service
                 var trip = await repository.GetFirstOrDefaultAsync(predicate: x => x.TripID.Equals(totrip.TripID));
                
               
-                trip.Truck = totrip.Truck;
-                trip.TripStartTime = totrip.TripStartTime;
-                trip.TripEndTime = totrip.TripEndTime;
+                trip.TruckID = totrip.TruckID;
+                trip.ExpectedStartTime = totrip.ExpectedStartTime;
+                trip.ExpectedEndTime = totrip.ExpectedEndTime;
                 trip.TripStatus = totrip.TripStatus;
                 trip.UpdateDataTime = DateTime.Now;
-
+                trip.Title = totrip.Title;
+                trip.Content = totrip.Content;
                 repository.Update(trip);
                 if (await Work.SaveChangesAsync() > 0)
                     return new ApiResponse(true, entity);
